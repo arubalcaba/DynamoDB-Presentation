@@ -77,3 +77,39 @@
   "PhoneNumber": "123-456-7890"
 }
 ```
+
+### Order
+```json
+{
+  "PK": "CUSTOMER#12345",
+  "SK": "ORDER#98765",
+  "OrderId": "98765",
+  "OrderDate": "2024-10-28",
+  "TotalPrice": 15.50,
+  "Status": "Pending"
+}
+```
+
+### Taco
+```json
+{
+  "PK": "ORDER#98765",
+  "SK": "TACO#001",
+  "TacoId": "001",
+  "Type": "Beef Taco",
+  "BasePrice": 5.00
+}
+
+```
+
+### Topping
+```json
+{
+  "PK": "TACO#001",
+  "SK": "TOPPING#01",
+  "ToppingId": "01",
+  "Name": "Cheese",
+  "Price": 0.50
+}
+```
+
