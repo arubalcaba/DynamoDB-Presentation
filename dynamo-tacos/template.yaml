@@ -15,6 +15,58 @@ Globals:
     LoggingConfig:
       LogFormat: JSON
 Resources:
+  TacoOrderingTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: TacoOrderingApp
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: Status
+          AttributeType: S   # GSI1 PK
+        - AttributeName: OrderDate
+          AttributeType: S   # GSI1 SK
+        - AttributeName: CustomerId
+          AttributeType: S   # GSI2 PK
+        - AttributeName: TacoId
+          AttributeType: S   # GSI2 SK
+        - AttributeName: OrderId
+          AttributeType: S   # GSI3 PK
+        - AttributeName: SideItemId
+          AttributeType: S   # GSI3 SK
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: GSI1_StatusOrderDate
+          KeySchema:
+            - AttributeName: Status
+              KeyType: HASH
+            - AttributeName: OrderDate
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: GSI2_CustomerIdTacoId
+          KeySchema:
+            - AttributeName: CustomerId
+              KeyType: HASH
+            - AttributeName: TacoId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: GSI3_OrderIdSideItemId
+          KeySchema:
+            - AttributeName: OrderId
+              KeyType: HASH
+            - AttributeName: SideItemId
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
   DynamoTacosFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -24,14 +76,37 @@ Resources:
       Architectures:
       - x86_64
       MemorySize: 512
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+      Environment:
         Variables:
+          TABLE_NAME: !Ref TacoOrderingTable
           PARAM1: VALUE
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TacoOrderingTable
       Events:
         HelloWorld:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /hello
+            Method: get
+  MenuHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DynamoTacos
+      Handler: dynamotaco.api.MenuHandler::handleRequest
+      Runtime: java21
+      MemorySize: 512
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TacoOrderingTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TacoOrderingTable
+      Events:
+        GetMenu:
+          Type: Api
+          Properties:
+            Path: /menu
             Method: get
 
   ApplicationResourceGroup:
@@ -60,3 +135,9 @@ Outputs:
   DynamoTacosFunctionIamRole:
     Description: Implicit IAM Role created for DynamoTacos function
     Value: !GetAtt DynamoTacosFunctionRole.Arn
+  MenuHandlerApi:
+    Description: API Gateway endpoint URL for Prod stage for MenuHandler function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/menu/"
+  MenuHandlerFunction:
+    Description: MenuHandler Lambda Function ARN
+    Value: !GetAtt MenuHandlerFunction.Arn

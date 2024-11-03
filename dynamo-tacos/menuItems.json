@@ -1,0 +1,200 @@
+{
+  "TacoOrderingApp": [
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "TACO#001"},
+          "id": {"S": "001"},
+          "name": {"S": "Carne Asada"},
+          "price": {"N": "6.00"},
+          "foodItemType": {"S": "TACO"},
+          "description": {"S": "Delicious Marinated skirt steak"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "TACO#002"},
+          "id": {"S": "002"},
+          "name": {"S": "Chicken Fajita"},
+          "price": {"N": "6.00"},
+          "foodItemType": {"S": "TACO"},
+          "description": {"S": "Marinated Chicken Fajitas with Flour Tortilla"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "TACO#003"},
+          "id": {"S": "003"},
+          "name": {"S": "Al Pastor"},
+          "price": {"N": "8.00"},
+          "foodItemType": {"S": "TACO"},
+          "description": {"S": "4 Street Tacos de Al Pastor"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "TACO#004"},
+          "id": {"S": "004"},
+          "name": {"S": "Carnitas"},
+          "price": {"N": "6.00"},
+          "foodItemType": {"S": "TACO"},
+          "description": {"S": "Braised Pork Shoulder that is delicious!"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "TOPPING#001"},
+          "id": {"S": "001"},
+          "name": {"S": "Pico de Gallo"},
+          "price": {"N": "0.25"},
+          "foodItemType": {"S": "TOPPING"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "TOPPING#002"},
+          "id": {"S": "002"},
+          "name": {"S": "Crema"},
+          "price": {"N": "0.25"},
+          "foodItemType": {"S": "TOPPING"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "TOPPING#003"},
+          "id": {"S": "003"},
+          "name": {"S": "Salsa De Elote"},
+          "price": {"N": "0.25"},
+          "foodItemType": {"S": "TOPPING"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "TOPPING#004"},
+          "id": {"S": "004"},
+          "name": {"S": "Guacamole"},
+          "price": {"N": "0.25"},
+          "foodItemType": {"S": "TOPPING"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "TOPPING#005"},
+          "id": {"S": "005"},
+          "name": {"S": "Cheese"},
+          "price": {"N": "0.25"},
+          "foodItemType": {"S": "TOPPING"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "SIDE#001"},
+          "id": {"S": "001"},
+          "name": {"S": "Negra Modelo Beer"},
+          "price": {"N": "5.00"},
+          "foodItemType": {"S": "SIDE"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "SIDE#002"},
+          "id": {"S": "002"},
+          "name": {"S": "Mexican Coca Cola"},
+          "price": {"N": "3.00"},
+          "foodItemType": {"S": "SIDE"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "SIDE#003"},
+          "id": {"S": "003"},
+          "name": {"S": "Chips and Guac"},
+          "price": {"N": "3.00"},
+          "foodItemType": {"S": "SIDE"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "SIDE#004"},
+          "id": {"S": "004"},
+          "name": {"S": "Charro Beans"},
+          "price": {"N": "2.00"},
+          "foodItemType": {"S": "SIDE"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "SIDE#005"},
+          "id": {"S": "005"},
+          "name": {"S": "Abuela's Special Rice"},
+          "price": {"N": "2.00"},
+          "foodItemType": {"S": "SIDE"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "SIDE#006"},
+          "id": {"S": "006"},
+          "name": {"S": "Chocolate Chip Cookies"},
+          "price": {"N": "1.50"},
+          "foodItemType": {"S": "SIDE"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": {"S": "MENU"},
+          "SK": {"S": "SIDE#007"},
+          "id": {"S": "007"},
+          "name": {"S": "Horchata"},
+          "price": {"N": "1.50"},
+          "foodItemType": {"S": "SIDE"}
+        }
+      }
+    }
+  ]
+}
