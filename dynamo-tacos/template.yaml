@@ -108,6 +108,25 @@ Resources:
           Properties:
             Path: /menu
             Method: get
+  CreateCustomerHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DynamoTacos
+      Handler: dynamotaco.api.CreateCustomerHandler::handleRequest
+      Runtime: java21
+      MemorySize: 512
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TacoOrderingTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TacoOrderingTable
+      Events:
+        CreateCustomer:
+          Type: Api
+          Properties:
+            Path: /customer
+            Method: post
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -141,3 +160,9 @@ Outputs:
   MenuHandlerFunction:
     Description: MenuHandler Lambda Function ARN
     Value: !GetAtt MenuHandlerFunction.Arn
+  CreateCustomerApi:
+    Description: API Gateway endpoint URL for Prod stage for CreateCustomerHandler function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/customer/"
+  CreateCustomerHandlerFunction:
+    Description: CreateCustomerHandler Lambda Function ARN
+    Value: !GetAtt CreateCustomerHandlerFunction.Arn
