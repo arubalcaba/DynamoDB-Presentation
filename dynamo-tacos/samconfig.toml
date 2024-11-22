@@ -20,6 +20,7 @@ stack_name = "dyanmo-tacos-stack"
 s3_prefix = "dyanmo-tacos-stack"
 region = "us-west-2"
 image_repositories = []
+disable_rollback = true
 
 [default.package.parameters]
 resolve_s3 = true
