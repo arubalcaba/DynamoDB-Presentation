@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import { signIn, signOut, getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 import type { AuthUser, FetchUserAttributesOutput } from '@aws-amplify/auth';
+import { Customer } from "@/models/models";
+import customerService from "@/services/customerService";
 
 interface UserState {
     user: AuthUser | null
@@ -21,12 +23,22 @@ export const useAuthStore = defineStore('auth', {
           username,
           password
         });
-
         if (isSignedIn) {
           const user = await getCurrentUser();
           this.user = user;
           this.isAuthenticated = true;
+          const attributes = await fetchUserAttributes();
+          const customer = {
+            email: attributes?.email,
+            firstName: attributes?.given_name,
+            lastName: attributes?.family_name,
+            phoneNumber: attributes?.phone_number
+          } as Customer
+          const rsp = await customerService.createOrUpdateCustomer(customer)
+          console.log('Customer created:', rsp);
+
         }
+        console.log('Sign in success:');
         return { isSignedIn, nextStep };
       } catch (error) {
         console.error('Sign in error:', error);

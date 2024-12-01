@@ -10,7 +10,9 @@
   "dependencies": {
     "@aws-amplify/ui-vue": "^4.2.22",
     "@mdi/font": "7.4.47",
+    "@types/axios": "^0.14.4",
     "aws-amplify": "^6.8.1",
+    "axios": "^1.7.7",
     "core-js": "^3.37.1",
     "roboto-fontface": "*",
     "vue": "^3.4.31",

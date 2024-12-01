@@ -29,9 +29,10 @@ public class CreateCustomerHandler implements RequestHandler<APIGatewayProxyRequ
             context.getLogger().log("Raw input: " + customer.toString());
 
             // Verify the Customer object fields
-            context.getLogger().log("Customer name: " + customer.getName());
-            context.getLogger().log("Customer email: " + customer.getEmail());
-            context.getLogger().log("Customer phone number: " + customer.getPhoneNumber());
+//            context.getLogger().log("Customer firstName " + customer.getFirstName());
+//            context.getLogger().log("Customer lastName " + customer.getLastName());
+//            context.getLogger().log("Customer email: " + customer.getEmail());
+//            context.getLogger().log("Customer phone number: " + customer.getPhoneNumber());
 
             String email = customer.getEmail();
             String partitionKey = "CUSTOMER#" + email;
@@ -47,6 +48,11 @@ public class CreateCustomerHandler implements RequestHandler<APIGatewayProxyRequ
             createCustomerRecord(partitionKey, customer, context);
             return new APIGatewayProxyResponseEvent()
                     .withStatusCode(201)
+                    .withHeaders(Map.of(
+                            "Access-Control-Allow-Headers", "*",
+                            "Access-Control-Allow-Origin", "*",
+                            "Access-Control-Allow-Methods", "*"
+                    ))
                     .withBody("Customer with email " + email + " created successfully.");
         } catch (Exception e) {
             context.getLogger().log("Error creating customer: " + e.getMessage());
@@ -73,7 +79,8 @@ public class CreateCustomerHandler implements RequestHandler<APIGatewayProxyRequ
         Map<String, AttributeValue> item = new HashMap<>();
         item.put("PK", AttributeValue.builder().s(partitionKey).build());
         item.put("SK", AttributeValue.builder().s("PROFILE").build());
-        item.put("Name", AttributeValue.builder().s(customer.getName()).build());
+        item.put("FirstName", AttributeValue.builder().s(customer.getFirstName()).build());
+        item.put("LastName", AttributeValue.builder().s(customer.getLastName()).build());
         item.put("Email", AttributeValue.builder().s(customer.getEmail()).build());
         item.put("PhoneNumber", AttributeValue.builder().s(customer.getPhoneNumber()).build());
 

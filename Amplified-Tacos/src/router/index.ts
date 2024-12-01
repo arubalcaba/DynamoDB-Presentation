@@ -8,10 +8,30 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
 import { routes } from 'vue-router/auto-routes'
+import { useAuthStore } from '@/stores/authStore'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: setupLayouts(routes),
+})
+
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
+  const publicPages = ['/', '/about']
+  const authRequired = !publicPages.includes(to.path)
+  debugger // eslint-disable-line no-debugger
+  if (authRequired && !authStore.isAuthenticated) {
+    console.log('User is not authenticated, redirecting to /')
+    return next('/')
+  }
+  if (to.path === '/' && authStore.isAuthenticated) {
+    console.log('User is authenticated but trying to access root, redirecting to intended path')
+    return next(from.path)
+  }
+
+  console.log('User is authenticated, proceeding to:', to.path)
+  return next()
 })
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
