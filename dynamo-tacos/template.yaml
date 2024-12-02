@@ -132,6 +132,25 @@ Resources:
           Properties:
             Path: /customer
             Method: post
+  CreateOrderHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DynamoTacos
+      Handler: dynamotaco.api.CreateOrderHandler::handleRequest
+      Runtime: java21
+      MemorySize: 512
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TacoOrderingTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TacoOrderingTable
+      Events:
+        CreateOrder:
+          Type: Api
+          Properties:
+            Path: /order
+            Method: post
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -171,3 +190,9 @@ Outputs:
   CreateCustomerHandlerFunction:
     Description: CreateCustomerHandler Lambda Function ARN
     Value: !GetAtt CreateCustomerHandlerFunction.Arn
+  CreateOrderApi:
+    Description: API Gateway endpoint URL for Prod stage for CreateOrderHandler function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/order/"
+  CreateOrderHandlerFunction:
+    Description: CreateOrderHandler Lambda Function ARN
+    Value: !GetAtt CreateOrderHandlerFunction.Arn

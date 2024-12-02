@@ -67,4 +67,17 @@ public class Order {
     public void setSideItems(List<SideItem> sideItems) {
         this.sideItems = sideItems;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id='" + id + '\'' +
+                ", customerId='" + customerId + '\'' +
+                ", orderDate=" + orderDate +
+                ", totalPrice=" + totalPrice +
+                ", status=" + status +
+                ", tacos=" + tacos +
+                ", sideItems=" + sideItems +
+                '}';
+    }
 }
