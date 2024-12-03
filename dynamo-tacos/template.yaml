@@ -151,6 +151,44 @@ Resources:
           Properties:
             Path: /order
             Method: post
+  GetOrderHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DynamoTacos
+      Handler: dynamotaco.api.GetOrderHandler::handleRequest
+      Runtime: java21
+      MemorySize: 512
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TacoOrderingTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TacoOrderingTable
+      Events:
+        GetOrder:
+          Type: Api
+          Properties:
+            Path: /order
+            Method: get
+  GetAllOrdersHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DynamoTacos
+      Handler: dynamotaco.api.GetAllOrdersHandler::handleRequest
+      Runtime: java21
+      MemorySize: 512
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TacoOrderingTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TacoOrderingTable
+      Events:
+        GetAllOrders:
+          Type: Api
+          Properties:
+            Path: /orders
+            Method: get
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -196,3 +234,15 @@ Outputs:
   CreateOrderHandlerFunction:
     Description: CreateOrderHandler Lambda Function ARN
     Value: !GetAtt CreateOrderHandlerFunction.Arn
+  GetOrderApi:
+    Description: API Gateway endpoint URL for Prod stage for GetOrderHandler function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/order/"
+  GetOrderHandlerFunction:
+    Description: GetOrderHandler Lambda Function ARN
+    Value: !GetAtt GetOrderHandlerFunction.Arn
+  GetAllOrdersApi:
+    Description: API Gateway endpoint URL for Prod stage for GetAllOrdersHandler function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/orders?email={email}"
+  GetAllOrdersHandlerFunction:
+    Description: GetAllOrdersHandler Lambda Function ARN
+    Value: !GetAtt GetAllOrdersHandlerFunction.Arn
