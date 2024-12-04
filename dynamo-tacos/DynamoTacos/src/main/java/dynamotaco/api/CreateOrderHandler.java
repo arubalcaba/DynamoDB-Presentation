@@ -15,10 +15,8 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CreateOrderHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -66,6 +64,7 @@ public class CreateOrderHandler implements RequestHandler<APIGatewayProxyRequest
         var totalPrice = calculateTotalPrice(order);
         orderItem.put("TotalPrice", AttributeValue.builder().n(String.valueOf(totalPrice)).build());
         orderItem.put("Status", AttributeValue.builder().s(order.getStatus().toString()).build());
+        addItemsToOrder(orderItem, order);
 
         PutItemRequest orderPutRequest = PutItemRequest.builder()
                 .tableName(TABLE_NAME)
@@ -73,74 +72,41 @@ public class CreateOrderHandler implements RequestHandler<APIGatewayProxyRequest
                 .build();
         dynamoDb.putItem(orderPutRequest);
 
-        // Add Tacos and SideItems to the order
-        addItemsToOrder(order);
-
     }
 
-    private void addItemsToOrder(Order order) {
+    private void addItemsToOrder(Map<String, AttributeValue> orderItem, Order order) {
         if(CollectionUtils.isNotEmpty(order.getTacos())) {
-            order.getTacos().forEach(taco -> {
-                // Add taco to order
-                String tacoId = UUID.randomUUID().toString();
-                String tacoPartitionKey = "ORDER#" + order.getId();
-                String tacoSortKey = "TACO#" + tacoId;
-                Map<String, AttributeValue> tacoItem = new HashMap<>();
-                tacoItem.put("PK", AttributeValue.builder().s(tacoPartitionKey).build());
-                tacoItem.put("SK", AttributeValue.builder().s(tacoSortKey).build());
-                tacoItem.put("MenuItemId", AttributeValue.builder().s(taco.getMenuItemId()).build());
-                tacoItem.put("Name", AttributeValue.builder().s(taco.getName()).build());
-                tacoItem.put("Price", AttributeValue.builder().n(String.valueOf(taco.getPrice())).build());
+            List<Map<String, AttributeValue>> tacos = order.getTacos().stream().map(taco -> {
+                Map<String, AttributeValue> tacoMap = new HashMap<>();
+                tacoMap.put("TacoId", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
+                tacoMap.put("MenuItemId", AttributeValue.builder().s(taco.getMenuItemId()).build());
+                tacoMap.put("Name", AttributeValue.builder().s(taco.getName()).build());
+                tacoMap.put("Price", AttributeValue.builder().n(String.valueOf(taco.getPrice())).build());
 
-                PutItemRequest tacoPutRequest = PutItemRequest.builder()
-                        .tableName(TABLE_NAME)
-                        .item(tacoItem)
-                        .build();
-                dynamoDb.putItem(tacoPutRequest);
-
-
-                if(CollectionUtils.isNotEmpty(taco.getToppings())){
-                    taco.getToppings().forEach(topping -> {
-                        // Add taco topping to order
-                        String toppingId = UUID.randomUUID().toString();
-                        String toppingPartitionKey = "TACO#" + tacoId;
-                        String toppingSortKey = "TOPPING#" + toppingId;
-                        Map<String, AttributeValue> toppingItem = new HashMap<>();
-                        toppingItem.put("PK", AttributeValue.builder().s(toppingPartitionKey).build());
-                        toppingItem.put("SK", AttributeValue.builder().s(toppingSortKey).build());
-                        toppingItem.put("MenuItemId", AttributeValue.builder().s(topping.getMenuItemId()).build());
-                        toppingItem.put("Name", AttributeValue.builder().s(topping.getName()).build());
-                        toppingItem.put("Price", AttributeValue.builder().n(String.valueOf(topping.getPrice())).build());
-
-                        PutItemRequest toppingPutRequest = PutItemRequest.builder()
-                                .tableName(TABLE_NAME)
-                                .item(toppingItem)
-                                .build();
-                        dynamoDb.putItem(toppingPutRequest);
-                    });
+                if (taco.getToppings() != null) {
+                    List<Map<String, AttributeValue>> toppings = taco.getToppings().stream().map(topping -> {
+                        Map<String, AttributeValue> toppingMap = new HashMap<>();
+                        toppingMap.put("ToppingId", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
+                        toppingMap.put("Name", AttributeValue.builder().s(topping.getName()).build());
+                        toppingMap.put("Price", AttributeValue.builder().n(String.valueOf(topping.getPrice())).build());
+                        return toppingMap;
+                    }).toList();
+                    tacoMap.put("Toppings", AttributeValue.builder().l(toppings.stream().map(AttributeValue::fromM).collect(Collectors.toList())).build());
                 }
-            });
+                return tacoMap;
+            }).toList();
+            orderItem.put("Tacos", AttributeValue.builder().l(tacos.stream().map(AttributeValue::fromM).collect(Collectors.toList())).build());
         }
 
         if(CollectionUtils.isNotEmpty(order.getSideItems())) {
-            order.getSideItems().forEach(sideItem -> {
-                // Add side item to order
-                String sideItemId = UUID.randomUUID().toString();
-                String sideItemPartitionKey = "ORDER#" + order.getId();
-                String sideItemSortKey = "SIDEITEM#" + sideItemId;
-                Map<String, AttributeValue> sideItemItem = new HashMap<>();
-                sideItemItem.put("PK", AttributeValue.builder().s(sideItemPartitionKey).build());
-                sideItemItem.put("SK", AttributeValue.builder().s(sideItemSortKey).build());
-                sideItemItem.put("MenuItemId", AttributeValue.builder().s(sideItem.getMenuItemId()).build());
-                sideItemItem.put("Name", AttributeValue.builder().s(sideItem.getName()).build());
-                sideItemItem.put("Price", AttributeValue.builder().n(String.valueOf(sideItem.getPrice())).build());
-
-                PutItemRequest sideItemPutRequest = PutItemRequest.builder()
-                        .tableName(TABLE_NAME)
-                        .item(sideItemItem)
-                        .build();
-                dynamoDb.putItem(sideItemPutRequest);
-            });
+            List<Map<String, AttributeValue>> sideItems = order.getSideItems().stream().map(sideItem -> {
+                Map<String, AttributeValue> sideItemMap = new HashMap<>();
+                sideItemMap.put("SideItemId", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
+                sideItemMap.put("Name", AttributeValue.builder().s(sideItem.getName()).build());
+                sideItemMap.put("Price", AttributeValue.builder().n(String.valueOf(sideItem.getPrice())).build());
+                return sideItemMap;
+            }).toList();;
+            orderItem.put("SideItems", AttributeValue.builder().l(sideItems.stream().map(AttributeValue::fromM).collect(Collectors.toList())).build());
         }
 
     }
