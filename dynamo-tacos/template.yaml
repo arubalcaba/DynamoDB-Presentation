@@ -189,6 +189,25 @@ Resources:
           Properties:
             Path: /orders
             Method: get
+  UpdateOrderHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: DynamoTacos
+      Handler: dynamotaco.api.UpdateOrderHandler::handleRequest
+      Runtime: java21
+      MemorySize: 512
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TacoOrderingTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TacoOrderingTable
+      Events:
+        UpdateOrder:
+          Type: Api
+          Properties:
+            Path: /order
+            Method: put
 
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
@@ -246,3 +265,9 @@ Outputs:
   GetAllOrdersHandlerFunction:
     Description: GetAllOrdersHandler Lambda Function ARN
     Value: !GetAtt GetAllOrdersHandlerFunction.Arn
+  UpdateOrderApi:
+    Description: API Gateway endpoint URL for Prod stage for UpdateOrderHandler function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/order/"
+  UpdateOrderHandlerFunction:
+    Description: UpdateOrderHandler Lambda Function ARN
+    Value: !GetAtt UpdateOrderHandlerFunction.Arn
